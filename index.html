@@ -9,6 +9,27 @@
     <h1>Boston Weather Data</h1>
     <div id="weatherResult">Loading weather data...</div>
 
+    <h2>About the API</h2>
+<p><strong>API Selected:</strong> Weatherstack API</p>
+<p><strong>Reason for Selection:</strong> I chose the Weatherstack API because it provides real-time weather data in JSON format, making it easy to integrate with a website. It also allows location-based queries, making it useful for various applications.</p>
+
+<h2>API Source</h2>
+<p>The Weatherstack API is available at: <a href="https://weatherstack.com/" target="_blank">https://weatherstack.com/</a></p>
+
+<h2>API Parameters Used</h2>
+<p>The API request requires the following parameters:</p>
+<ul>
+    <li><strong>access_key:</strong> This is the API key needed for authentication.</li>
+    <li><strong>query:</strong> This specifies the location for which weather data is requested (e.g., "Boston").</li>
+</ul>
+
+<p>Example API Request:</p>
+<pre>http://api.weatherstack.com/current?access_key=54c5b2fe83593763530bdd3fbcf9d00d&query=Boston</pre>
+
+<h2>Use Case for the API</h2>
+<p>This API would be helpful in weather forecasting applications, travel planning websites, or personal dashboards that display real-time weather updates for a specific location.</p>
+
+
     <script>
         const apiKey = '54c5b2fe83593763530bdd3fbcf9d00d'; // ws API key
         const city = 'Boston';
@@ -38,3 +59,4 @@
     </script>
 </body>
 </html>
+
