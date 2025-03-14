@@ -1,61 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather API - Boston</title>
-</head>
-<body>
-    <h1>Boston Weather Data</h1>
-    <div id="weatherResult">Loading weather data...</div>
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+                integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+                crossorigin="anonymous"></script>
+        <style>
+            table, tr, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 8px;
+            }
+        </style>
+    </head>
+    <body onload="loadWeather()">
+        <h1>Boston Weather Data</h1>
 
-    <h2>About the API</h2>
-    <p><strong>API Selected:</strong> Weatherstack API</p>
-    <p><strong>Reason for Selection:</strong> I chose the Weatherstack API because it provides real-time weather data in JSON format, making it easy to integrate with a website. It also allows location-based queries, making it useful for various applications.</p>
+        <p>
+            The API that I selected is from <strong>Weatherstack</strong>. It provides real-time weather data in JSON format, including temperature, humidity, and wind speed.
+            I found it on the <a href="https://weatherstack.com/" target="_blank">Weatherstack website</a>.
+        </p>
 
-    <h2>API Source</h2>
-    <p>The Weatherstack API is available at: <a href="https://weatherstack.com/" target="_blank">https://weatherstack.com/</a></p>
+        <p>
+            The API requires a request with a **location parameter** and an **API key** to fetch weather data. I used the **"current"** endpoint to retrieve live weather information for Boston.
+        </p>
 
-    <h2>API Parameters Used</h2>
-    <p>The API request requires the following parameters:</p>
-    <ul>
-        <li><strong>access_key:</strong> This is the API key needed for authentication.</li>
-        <li><strong>query:</strong> This specifies the location for which weather data is requested (e.g., "Boston").</li>
-    </ul>
+        <p>
+            This API is useful for applications that need real-time weather updates, such as travel websites, personal weather dashboards, or outdoor event planning.
+        </p>
 
-    <p>Example API Request:</p>
-    <pre>http://api.weatherstack.com/current?access_key=54c5b2fe83593763530bdd3fbcf9d00d&query=Boston</pre>
+        <div id="data">Loading weather data...</div>
 
-    <h2>Use Case for the API</h2>
-    <p>This API would be helpful in weather forecasting applications, travel planning websites, or personal dashboards that display real-time weather updates for a specific location.</p>
+        <table style="width: 100%">
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tbody id="weatherTable"></tbody>
+        </table>
 
+        <script>
+            function loadWeather() {
+                // Step 1: Create a request object
+                let request = new XMLHttpRequest();
+                console.log("1 - Request object created");
 
-    <script>
-        const apiKey = '54c5b2fe83593763530bdd3fbcf9d00d'; // ws API key
-        const city = 'Boston';
-        const url = `http://api.weatherstack.com/current?access_key=${apiKey}&query=${city}`;
+                // Step 2: Define the API URL
+                const proxy = "https://api.allorigins.win/raw?url="; 
+                const apiKey = "54c5b2fe83593763530bdd3fbcf9d00d"; 
+                const city = "Boston";
+                const apiUrl = `http://api.weatherstack.com/current?access_key=${apiKey}&query=${city}`;
+                
+                let url = proxy + encodeURIComponent(apiUrl);
+                
+                request.open("GET", url, true);
+                console.log("2 - Opened request to API");
 
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                if (data.error) {
-                    document.getElementById("weatherResult").innerHTML = `<p>Error: ${data.error.info}</p>`;
-                } else {
-                    document.getElementById("weatherResult").innerHTML = `
-                        <h2>Weather in ${data.location.name}, ${data.location.country}</h2>
-                        <p>Temperature: ${data.current.temperature}°C</p>
-                        <p>Weather: ${data.current.weather_descriptions[0]}</p>
-                        <p>Humidity: ${data.current.humidity}%</p>
-                        <p>Wind Speed: ${data.current.wind_speed} km/h</p>
-                        <p>Observation Time: ${data.current.observation_time}</p>
-                    `;
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error);
-                document.getElementById("weatherResult").innerHTML = `<p>Failed to fetch data. Please try again later!!</p>`;
-            });
-    </script>
-</body>
+                // Step 3: Set up event handler
+                request.onreadystatechange = function () {
+                    console.log("3 - Ready state change event fired.");
+
+                    if (request.readyState == 4 && request.status == 200) {
+                        document.getElementById("data").innerHTML = "Weather data retrieved!";
+
+                        let result = request.responseText;
+                        let weatherData = JSON.parse(result);
+                        console.log(weatherData);
+
+                        // Step 4: Populate table with weather data
+                        let table = document.getElementById("weatherTable");
+                        table.innerHTML = `
+                            <tr><td>Location</td><td>${weatherData.location.name}, ${weatherData.location.country}</td></tr>
+                            <tr><td>Temperature</td><td>${weatherData.current.temperature}°C</td></tr>
+                            <tr><td>Weather</td><td>${weatherData.current.weather_descriptions[0]}</td></tr>
+                            <tr><td>Humidity</td><td>${weatherData.current.humidity}%</td></tr>
+                            <tr><td>Wind Speed</td><td>${weatherData.current.wind_speed} km/h</td></tr>
+                            <tr><td>Observation Time</td><td>${weatherData.current.observation_time}</td></tr>
+                        `;
+
+                    } else if (request.readyState == 4 && request.status != 200) {
+                        document.getElementById("data").innerHTML = "Failed to retrieve data! Check the API key or server status.";
+                    }
+                };
+
+                // Step 4: Send the request
+                request.send();
+                console.log("4 - Request sent");
+            }
+        </script>
+    </body>
 </html>
